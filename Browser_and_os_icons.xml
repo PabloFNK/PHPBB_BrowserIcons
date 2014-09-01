@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+		<?xml-stylesheet type="text/xsl" href="modx.prosilver.en.xsl"?>
+		<!--For security purposes, please check: http://www.phpbb.com/mods/ for the latest version of this MOD. Although MODs are checked before being allowed in the MODs Database there is no guarantee that there are no security problems within the MOD. No support will be given for MODs not found within the MODs Database which can be found at http://www.phpbb.com/mods/-->
+		<mod xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.phpbb.com/mods/xml/modx-1.0.xsd">
+			<header>
+				<license>http://opensource.org/licenses/gpl-license.php GNU General Public License v2</license>
+				<title lang="en">Browser and OS icon</title>
+				<title lang="pl">Ikonki przeglądarki i systemu</title>
+				<description lang="en">This mod adds browser and system icon into every post.</description>
+				<description lang="pl">Dodaje do postu ikony informujace o przegladarce i systemie operacyjnym używanych przez autora tego postu.</description>
+				<author-notes lang="en"><![CDATA[ ]]></author-notes>
+				<author-group>
+					<author>
+						<realname>daris</realname>
+						<email>daris91@gmail.com</email>
+						<username>daris</username>
+						
+						<contributions />
+					</author>
+				</author-group>
+				<mod-version>
+					<major>3</major>
+					<minor>0</minor>
+					<revision>2</revision>
+					<release></release>
+				</mod-version>
+				<installation>
+					<level>easy</level>
+					<time>180</time>
+					<target-version>
+						<target-primary>3.0</target-primary>
+						<target-major allow="exact">3</target-major>
+						<target-minor allow="exact">0</target-minor>
+					</target-version>
+				</installation>
+				<history>
+			<entry>
+				<date>2007-08-03</date>
+				<rev-version>
+					<major>2</major>
+					<minor>0</minor>
+					<revision>0</revision>
+				</rev-version>
+				<changelog lang="en">
+					<change>Changed all icons to PNG image format</change>
+				</changelog>
+				<changelog lang="pl">
+					<change>Zmieniono wszystkie ikonki do formatu PNG</change>
+				</changelog>
+			</entry>
+
+			<entry>
+				<date>2009-12-30</date>
+				<rev-version>
+					<major>3</major>
+					<minor>0</minor>
+					<revision>0</revision>
+				</rev-version>
+				<changelog lang="en">
+					<change>Some fixes</change>
+				</changelog>
+				<changelog lang="pl">
+					<change>Drobne poprawki w kodzie</change>
+				</changelog>
+			</entry>
+	
+			<entry>
+				<date>2010-03-01</date>
+				<rev-version>
+					<major>3</major>
+					<minor>0</minor>
+					<revision>1</revision>
+				</rev-version>
+				<changelog lang="en">
+					<change>Added missing Google Chrome icon</change>
+					<change>Fixed notice about undefined index when checking version of unknown browser</change>
+				</changelog>
+				<changelog lang="pl">
+					<change>Dodana brakująca ikona Google Chrome</change>
+					<change>Naprawiony błąd w przypadku sprawdzania wersji nieznanej przeglądarki</change>
+				</changelog>
+			</entry>
+
+			<entry>
+				<date>2010-03-03</date>
+				<rev-version>
+					<major>3</major>
+					<minor>0</minor>
+					<revision>2</revision>
+				</rev-version>
+				<changelog lang="en">
+					<change>Better version info for Opera</change>
+					<change>Added a space between icons</change>
+				</changelog>
+				<changelog lang="pl">
+					<change>Lepsze pobieranie wersji dla Opery</change>
+					<change>Spacja zamiast marginesu pomiędzy ikonami</change>
+				</changelog>
+			</entry>
+			
+			</history>
+				<meta name="modx file generator" content="Geoffreak's Easy phpBB3 MODX Script Generator @ http://www.geoffreak.org" />
+			</header>
+			<action-group>
+				<sql><![CDATA[ALTER TABLE phpbb_posts ADD user_agent VARCHAR(255);]]></sql>
+
+				<copy>
+					<file from="root/images/user_agent/*.*" to="/images/user_agent/*.*" />
+					<file from="root/includes/user_agent.php" to="/includes/user_agent.php" />
+				</copy>
+
+				<open src="includes/functions_posting.php">
+					<edit>
+						<find><![CDATA[			$sql_data[POSTS_TABLE]['sql'] = array(]]></find>
+						<action type="after-add"><![CDATA[				'user_agent'		=> $_SERVER['HTTP_USER_AGENT'],]]></action>
+					</edit>
+				</open>
+				<open src="viewtopic.php">
+					<edit>
+						<find><![CDATA[	$rowset[$row['post_id']] = array(]]></find>
+						<action type="after-add"><![CDATA[		'user_agent'			=> $row['user_agent'],]]></action>
+						<find><![CDATA[	$postrow = array(]]></find>
+						<action type="before-add"><![CDATA[	// Browser and OS icons
+	include_once $phpbb_root_path . 'includes/user_agent.' . $phpEx;]]></action>
+						<action type="after-add"><![CDATA[		'USER_AGENT' 			=> get_useragent_icons($row['user_agent']),	// USER AGENT]]></action>
+					</edit>
+				</open>
+				<open src="styles/prosilver/template/viewtopic_body.html">
+					<edit>
+						<find><![CDATA[		<!-- IF not S_IS_BOT -->
+		<!-- IF postrow.U_PM or postrow.U_EMAIL or postrow.U_WWW or postrow.U_MSN or postrow.U_ICQ or postrow.U_YIM or postrow.U_AIM -->
+]]></find>
+						<action type="before-add"><![CDATA[		<!-- IF postrow.USER_AGENT -->
+			<dd><ul class="profile-icons">{postrow.USER_AGENT}</ul></dd>
+		<!-- ENDIF -->]]></action>
+					</edit>
+				</open>
+			
+				<diy-instructions lang="en">Clear cache or remove file cache/tpl_prosilver_viewtopic_body.php</diy-instructions>
+				<diy-instructions lang="pl">Wyczyść cache prosilvera lub usuń plik cache/tpl_prosilver_viewtopic_body.php</diy-instructions>
+			</action-group>
+		</mod>
